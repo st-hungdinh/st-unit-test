@@ -1,60 +1,139 @@
 import { CartService } from './cart.service';
-import { Product } from './product';
 
-const mockData: {
-  [key: string]: Product;
-} = {
+const mockData = {
   apple: {
     id: 1,
     name: 'Product 1',
-    price: 100
+    price: 100,
+    discounts: [
+      {
+        quantity: 1,
+        discount: 0.05
+      },
+      {
+        quantity: 2,
+        discount: 0.1
+      }
+    ]
   },
   orange: {
     id: 2,
     name: 'Product 2',
-    price: 200
+    price: 200,
+    discounts: [
+      {
+        quantity: 2,
+        discount: 0.5
+      }
+    ]
   }
 };
 
 describe('CartService', () => {
-  const cartService = new CartService();
-  beforeEach(() => {
-    cartService.clearCart();
+  const cartService: CartService = new CartService();
+
+  describe('Test addToCart function', () => {
+    beforeEach(() => {
+      cartService.clearCart();
+    });
+
+    it('Should add new line item to cart', () => {
+      const lineItem = cartService.addToCart(mockData.apple, 1);
+      expect(cartService.cart.lineItems.length).toBe(1);
+
+      expect(cartService.cart.lineItems[0]).toEqual(lineItem);
+      expect(lineItem.product).toEqual(mockData.apple);
+      expect(lineItem.quantity).toBe(1);
+
+      cartService.addToCart(mockData.orange, 5);
+      expect(cartService.cart.lineItems.length).toBe(2);
+      expect(cartService.cart.lineItems[1].product).toEqual(mockData.orange);
+    });
+
+    it('Should add existed item to cart with correct total price', () => {
+      const item = cartService.addToCart(mockData.apple, 1);
+      expect(cartService.cart.lineItems.length).toBe(1);
+      expect(item.totalPrice).toBe(95);
+
+      cartService.addToCart(mockData.apple, 2);
+      expect(item.totalPrice).toBe(270);
+
+      cartService.addToCart(mockData.apple, 1);
+      expect(item.totalPrice).toBe(360);
+    });
   });
 
-  describe('Test addToCart', () => {
-    it('should add product to cart', () => {
+  describe('Test updateQuantity function', () => {
+    beforeEach(() => {
+      cartService.clearCart();
+    });
+
+    it('Should update quantity of existed line item', () => {
+      cartService.addToCart(mockData.apple, 1);
+      cartService.addToCart(mockData.apple, 2);
       cartService.addToCart(mockData.apple, 1);
 
-      const lineItem = cartService.getCart().lineItems[0];
-      expect(lineItem.totalPrice).toBe(95);
-      expect(cartService.getCart().lineItems.length).toBe(1);
+      const item = cartService.cart.lineItems[0];
+      expect(item.quantity).toBe(4);
+      expect(item.totalPrice).toBe(360);
+
+      cartService.updateQuantity(mockData.apple, 2);
+      expect(item.quantity).toBe(2);
+      expect(item.totalPrice).toBe(180);
     });
 
-    it('should add product to cart with quantity', () => {
-      cartService.addToCart(mockData.apple, 2);
-      cartService.addToCart(mockData.apple, 2);
-      expect(cartService.getCart().lineItems[0].quantity).toBe(4);
-    });
-  });
-
-  describe('Test updateQuantity', () => {
-    it('should update quantity of product in cart', () => {
-      cartService.addToCart(mockData.apple, 2);
-      cartService.addToCart(mockData.apple, 2);
-      expect(cartService.getCart().lineItems[0].quantity).toBe(4);
-      cartService.updateQuantity(mockData.apple, 3);
-      expect(cartService.getCart().lineItems[0].quantity).toBe(3);
+    it('Should return false if line item not existed', () => {
+      const result = cartService.updateQuantity(mockData.apple, 2);
+      expect(result).toBe(false);
     });
   });
 
-  describe('Test removeFromCart', () => {
-    it('should remove product from cart', () => {
+  describe('Test removeFromCart function', () => {
+    beforeEach(() => {
+      cartService.clearCart();
+    });
+
+    it('Should remove existed line item', () => {
+      cartService.addToCart(mockData.apple, 1);
       cartService.addToCart(mockData.apple, 2);
-      cartService.addToCart(mockData.apple, 2);
-      expect(cartService.getCart().lineItems.length).toBe(1);
+      cartService.addToCart(mockData.apple, 1);
+
+      const item = cartService.cart.lineItems[0];
+      expect(item.quantity).toBe(4);
+      expect(item.totalPrice).toBe(360);
+
       cartService.removeFromCart(mockData.apple);
-      expect(cartService.getCart().lineItems.length).toBe(0);
+      expect(cartService.cart.lineItems.length).toBe(0);
+    });
+
+    it('Should return false if line item not existed', () => {
+      const result = cartService.removeFromCart(mockData.apple);
+      expect(result).toBe(false);
+    });
+  });
+
+  describe('Test calculateTotalPayment function', () => {
+    beforeEach(() => {
+      cartService.clearCart();
+    });
+
+    it('Should return correct total payment', () => {
+      const item = cartService.addToCart(mockData.apple, 1);
+      cartService.addToCart(mockData.apple, 2);
+      cartService.addToCart(mockData.apple, 1);
+
+      expect(item.quantity).toBe(4);
+      expect(item.totalPrice).toBe(360);
+      expect(cartService.calculateTotalPayment()).toBe(360);
+      expect(cartService.cart.lineItems.length).toBe(1);
+
+      cartService.addToCart(mockData.orange, 2);
+      cartService.addToCart(mockData.orange, 1);
+      expect(cartService.cart.lineItems.length).toBe(2);
+      expect(cartService.cart.lineItems[1].quantity).toBe(3);
+      expect(cartService.cart.lineItems[1].totalPrice).toBe(300);
+
+      expect(cartService.calculateTotalPayment()).toBe(660);
     });
   });
 });

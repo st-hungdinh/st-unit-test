@@ -1,6 +1,7 @@
 import { Product } from './product';
 
 export type LineItem = {
+  id: number;
   product: Product;
   quantity: number;
   totalPrice: number;
