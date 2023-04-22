@@ -11,3 +11,9 @@
     - Kiểm tra `localStorage.setItem` được gọi với đúng `key` và `value` truyền vào.
     - Kiểm tra `localStorage.getItem` được gọi với đúng `key` truyền vào và trả về giá trị đúng.
     - Kiểm tra `localStorage.removeItem` được gọi với đúng `key` truyền vào.
+- Tạo một class bất kì, bên trong có sử dụng method các method của **`AuthStorageService`**, viết Unitest cho class vừa tạo(kiểm tra các method của AuthStorageService có được gọi và arguments truyền vào có như kỳ vọng hay không)(mock AuthStorageService)
+  - Chức năng đăng nhập:
+    - User đăng nhập thành công
+    - User đăng nhập thất bại
+  - Chức năng đăng xuất:
+    - User đăng xuất thành công

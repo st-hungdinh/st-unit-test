@@ -5,20 +5,42 @@ export class UserAuthService {
     this.authStorage = authStorage;
   }
 
-  fakeFetch(data: any) {
-    return new Promise((resolve) => {
+  fakeFetch(user: any): Promise<any> {
+    return new Promise((resolve, reject) => {
       setTimeout(() => {
-        resolve('1234');
+        if (user.email && user.name) {
+          resolve({
+            token: 'abcd1234',
+            user: {
+              name: user.name,
+              email: user.email
+            }
+          });
+        } else {
+          reject(new Error('User not found'));
+        }
       }, 1000);
     });
   }
 
-  async login(data: any): Promise<boolean> {
-    if (!data) {
+  async login(user: any): Promise<boolean> {
+    if (!user) {
       return false;
     }
-    const token = await this.fakeFetch(data);
-    this.authStorage.setToken(token);
+    try {
+      const response = await this.fakeFetch(user);
+      if (response?.token) {
+        this.authStorage.setToken(response.token);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      return false;
+    }
+  }
+
+  logout(): boolean {
+    this.authStorage.removeToken();
     return true;
   }
 }
