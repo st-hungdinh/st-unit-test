@@ -1,53 +1,51 @@
 import { AuthStorageService } from './authStorage.service';
 
-const authStorage = new AuthStorageService();
+describe('Test AuthStorageService', () => {
+  const keyItem = 'token';
 
-describe('Test setToken func', () => {
-  beforeEach(() => {
-    localStorage.clear();
+  const setItemMock = jest.spyOn(Storage.prototype, 'setItem');
+  const getItemMock = jest.spyOn(Storage.prototype, 'getItem');
+  const removeItemMock = jest.spyOn(Storage.prototype, 'removeItem');
+
+  const authStorageService = new AuthStorageService();
+
+  describe('Test Storage function has been called', () => {
+    it('Should set token called', () => {
+      authStorageService.setToken('abcd1234');
+      expect(setItemMock).toHaveBeenCalled();
+      expect(setItemMock).toHaveBeenCalledWith(keyItem, 'abcd1234');
+    });
+
+    it('Should get token called', () => {
+      authStorageService.getToken();
+      expect(getItemMock).toHaveBeenCalled();
+      expect(getItemMock).lastCalledWith(keyItem);
+    });
+
+    it('Should remove token called', () => {
+      authStorageService.removeToken();
+      expect(removeItemMock).toHaveBeenCalled();
+      expect(removeItemMock).lastCalledWith(keyItem);
+    });
   });
 
-  it('should set token', () => {
-    authStorage.setToken('token');
-    expect(localStorage.setItem).toBeCalled();
-    expect(localStorage.setItem).toBeCalledTimes(1);
-    expect(localStorage.getItem('token')).toBe('token');
-  });
+  describe('Test Storage function has been called with correct params', () => {
+    it('Should return correct value when add new item', () => {
+      authStorageService.setToken('abcd1234');
+      expect(setItemMock).toHaveBeenCalled();
+      expect(setItemMock).toHaveBeenCalledWith(keyItem, 'abcd1234');
+      const token = authStorageService.getToken();
+      expect(getItemMock).toHaveBeenCalled();
+      expect(getItemMock).lastCalledWith(keyItem);
+      expect(token).toEqual('abcd1234');
+    });
 
-  it('should set data', () => {
-    const data = JSON.stringify({ id: 'test' });
-    authStorage.setToken(data);
-    expect(localStorage.getItem('token')).toStrictEqual(data);
-  });
-});
-
-describe('Test getToken func', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
-  it('should get token', () => {
-    authStorage.setToken('token');
-    expect(authStorage.getToken()).toBe('token');
-  });
-
-  it('should get data', () => {
-    const data = JSON.stringify({ id: 'test' });
-    authStorage.setToken(data);
-    expect(authStorage.getToken()).toStrictEqual(data);
-  });
-});
-
-describe('Test removeToken func', () => {
-  beforeEach(() => {
-    localStorage.clear();
-  });
-
-  it('should remove token', () => {
-    authStorage.setToken('token');
-    authStorage.removeToken();
-    expect(localStorage.removeItem).toBeCalled();
-    expect(localStorage.removeItem).toBeCalledTimes(1);
-    expect(localStorage.getItem('token')).toBe(null);
+    it('Should return null when remove item', () => {
+      authStorageService.removeToken();
+      expect(removeItemMock).toHaveBeenCalled();
+      expect(removeItemMock).lastCalledWith(keyItem);
+      const token = authStorageService.getToken();
+      expect(token).toEqual(null);
+    });
   });
 });
