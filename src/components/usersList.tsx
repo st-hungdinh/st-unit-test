@@ -11,7 +11,7 @@ export const UsersList = () => {
   };
 
   return (
-    <table>
+    <table data-testid='data-table'>
       <thead>
         <tr>
           <th>Id</th>
@@ -26,9 +26,9 @@ export const UsersList = () => {
         </tr>
       </thead>
       <tbody>
-        {users &&
+        {users?.length > 0 ? (
           users.map((user: any) => (
-            <tr key={user.id}>
+            <tr key={user.id} data-testid={user.id}>
               <td>{user.id}</td>
               <td>{user.name}</td>
               <td>{user.username}</td>
@@ -42,13 +42,22 @@ export const UsersList = () => {
                   <Link to={`${user.id}`}>
                     <button className='btn-info'>View</button>
                   </Link>
-                  <button className='btn-danger' onClick={() => handleDeleteUser(user.id)}>
+                  <button
+                    data-testid={`btn-${user.id}`}
+                    className='btn-danger'
+                    onClick={() => handleDeleteUser(user.id)}
+                  >
                     Delete
                   </button>
                 </div>
               </td>
             </tr>
-          ))}
+          ))
+        ) : (
+          <tr>
+            <td colSpan={9}>No users</td>
+          </tr>
+        )}
       </tbody>
     </table>
   );

@@ -7,7 +7,7 @@ import { Home } from './pages/home.tsx';
 import { UserDetail } from './pages/userDetail.tsx';
 import { Users } from './pages/users.tsx';
 
-const router = createBrowserRouter([
+export const routerConfigs = [
   {
     path: '/',
     element: <App />,
@@ -26,7 +26,9 @@ const router = createBrowserRouter([
       }
     ]
   }
-]);
+];
+
+const router = createBrowserRouter(routerConfigs);
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

@@ -5,9 +5,7 @@ export const Home = () => {
     <div>
       <h1>Vite + React</h1>
       <div className='card'>
-        <Link to={`users`}>
-          <button>Explore Users List</button>
-        </Link>
+        <Link to={`users`}>Explore Users List</Link>
       </div>
     </div>
   );
