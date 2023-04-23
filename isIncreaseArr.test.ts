@@ -3,8 +3,8 @@ import { isIncreaseArr } from './isIncreaseArr';
 
 describe('Test isIncreaseArr func when input is array', () => {
   describe('Input is array contains only number', () => {
-    it('Should return true when input is empty array', () => {
-      expect(isIncreaseArr([])).toBe(true);
+    it('Should return false when input is empty array', () => {
+      expect(isIncreaseArr([])).toBe(false);
     });
 
     it('Should return true if input has one element', () => {
