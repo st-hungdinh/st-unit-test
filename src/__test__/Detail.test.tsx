@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { UserDetail } from '../pages/userDetail';
 import { usersDataMock } from './data/users';
@@ -53,5 +53,19 @@ describe('Test User Detail component', () => {
     );
 
     expect(screen.getByText(userMock.name)).toBeInTheDocument();
+  });
+
+  it('should render error', async () => {
+    (useQuery as jest.Mock).mockReturnValueOnce({ isError: true });
+
+    render(
+      <MemoryRouter initialEntries={['/users/1']}>
+        <UserDetail />
+      </MemoryRouter>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Get user detail failed.')).toBeInTheDocument();
+    });
   });
 });

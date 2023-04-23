@@ -4,10 +4,14 @@ import { Link, useParams } from 'react-router-dom';
 export const UserDetail = () => {
   const { id } = useParams();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['user', id],
     queryFn: () => fetch(`https://jsonplaceholder.typicode.com/users/${id}`).then((res) => res.json())
   });
+
+  if (isError) {
+    return <div>Get user detail failed.</div>;
+  }
 
   return (
     <div>

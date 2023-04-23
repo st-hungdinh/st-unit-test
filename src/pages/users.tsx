@@ -7,7 +7,7 @@ import { usersStore } from '../stores/users';
 export const Users = () => {
   const setUsers = usersStore((state: any) => state.setUsers);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError } = useQuery({
     queryKey: ['users'],
     queryFn: () => fetch('https://jsonplaceholder.typicode.com/users').then((res) => res.json())
   });
@@ -15,6 +15,10 @@ export const Users = () => {
   useEffect(() => {
     data && setUsers(data);
   }, [data, setUsers]);
+
+  if (isError) {
+    return <div>Get users list failed.</div>;
+  }
 
   return (
     <div>

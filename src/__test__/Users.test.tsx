@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { Users } from '../pages/users';
 import { usersDataMock } from './data/users';
 import wrapper from './setup/wrapper';
@@ -69,5 +69,18 @@ describe('Test Users page', () => {
     });
     expect(screen.getByText('Leanne Graham')).toBeInTheDocument();
     expect(screen.getByText('Ervin Howell')).toBeInTheDocument();
+  });
+
+  it('should render error', async () => {
+    (useQuery as jest.Mock).mockReturnValue({
+      data: null,
+      isError: true
+    });
+
+    render(<Users />, { wrapper: wrapper });
+
+    await waitFor(() => {
+      expect(screen.getByText('Get users list failed.')).toBeInTheDocument();
+    });
   });
 });
